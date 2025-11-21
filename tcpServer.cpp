@@ -30,7 +30,21 @@ int main()
             return 1;
         }
 
+        // address structure to bind to the socket
+        sockaddr_in service;
+        service.sin_family = AF_INET;   // supports IPv4 -- must match the socket domain
+        service.sin_port = htons(8080); // port at which the socket will exist
+        // using htons to convert host byte order to network byte order
+        service.sin_addr.s_addr = INADDR_ANY; // it is the IP of the network over which the socket must be active to receive and send data packets. INADDR_ANY represents all network interfaces including local host network
 
+        int bindStatus = bind(main_socket, (SOCKADDR *)&service, sizeof(service));
+        if (bindStatus == SOCKET_ERROR)
+        {
+            std::cout << "Bind failed with error: " << WSAGetLastError() << std::endl;
+            closesocket(main_socket);
+            WSACleanup();
+            return 1;
+        }
 
         while (true)
         {
@@ -43,6 +57,7 @@ int main()
     {
         cout << "ERROR: " << WSAGetLastError() << std::endl;
         cout << "ERROR e: " << e.what() << std::endl;
+        WSACleanup();
     }
 
     return 0;
