@@ -63,7 +63,7 @@ int main()
         while (true)
         {
             // accepting client connection, and assigning a socket for data exchange
-            SOCKET client_socket = accept(main_socket, NULL, NULL);
+            SOCKET client_socket = accept(main_socket, NULL, NULL); //
             if (client_socket == INVALID_SOCKET)
             {
                 std::cout << "Error at client_socket: " << WSAGetLastError() << std::endl;
@@ -72,15 +72,24 @@ int main()
             }
 
             int bytesRecv;
+            int totalBytesRecv = 0;
             do
             {
-                bytesRecv = recv(client_socket, buff, (int)DEFAULT_BUFLEN, 0);
+                if((int)DEFAULT_BUFLEN - totalBytesRecv <= 0){
+                    cout << "recv buffer full " << std::endl;
+                    break;
+                }
+
+                // preventing overflow this way. But it might cause data loss on the application layer, so will implement vector buffer later
+                bytesRecv = recv(client_socket, buff + totalBytesRecv, (int)DEFAULT_BUFLEN - totalBytesRecv, 0);
                 if (bytesRecv > 0)
                 {
+                    totalBytesRecv += bytesRecv;
                     cout << "bytes received: " << bytesRecv << std::endl;
                 } else {
                     cout << "recv failed: " << WSAGetLastError() << std::endl;
                 }
+
             } while(bytesRecv > 0);
         };
 
