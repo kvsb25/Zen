@@ -16,7 +16,7 @@ int main()
         // ******************Initialize Winsock******************
         WSADATA wsaData;
         int iResult;
-        char * buff = new char[DEFAULT_BUFLEN];
+        char *buff = new char[DEFAULT_BUFLEN];
         // int buffLen = DEFAULT_BUFLEN;
 
         iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
@@ -77,7 +77,8 @@ int main()
             int totalBytesRecv = 0;
             do
             {
-                if((int)DEFAULT_BUFLEN - totalBytesRecv <= 0){
+                if ((int)DEFAULT_BUFLEN - totalBytesRecv <= 0)
+                {
                     cout << "recv buffer full " << std::endl;
                     break;
                 }
@@ -89,67 +90,73 @@ int main()
                     totalBytesRecv += bytesRecv;
                     cout << "bytes received: " << bytesRecv << std::endl;
 
-                    if (strstr(buff, "\r\n\r\n")) {
+                    if (strstr(buff, "\r\n\r\n"))
+                    {
                         break;
                     }
-
-                } else {
+                }
+                else
+                {
                     cout << "recv failed: " << WSAGetLastError() << std::endl;
                     WSACleanup();
                     return 1;
                 }
 
-            } while(bytesRecv > 0);
+            } while (bytesRecv > 0);
 
             //***************************************** Process data *****************************************
             string request(buff); // converting char* to std::string
             buff = '\0';
+
             int first_space = request.find(' ');
             int second_space = request.find(' ', first_space + 1);
             int third_space = request.find('\r\n', second_space + 1);
-            struct Response{
-                string version;
-                int status_code;
-                string status_text;
-                string headers;
+            string method = request.substr(0, first_space);
+            string uri = request.substr(first_space + 1, second_space - (first_space + 1));
+
+            struct Response
+            {
+                string version = "HTTP/1.1";
+                int status_code = 200;
+                string status_text = "OK";
                 string data;
             };
 
             Response res;
 
-            string method = request.substr(0,first_space);
-            string uri = request.substr(first_space+1, second_space -(first_space + 1));
-            res.version = request.substr(second_space+1, third_space - (second_space + 1));
-            res.status_code = 200;
-            res.status_text = "OK";
-            res.headers = "Content-Type: text/html\r\nContent-Length: 1234\r\nDate: Thu, 21 Nov 2025 19:29:07 GMT\r\n";
-
-              // reading html file to send as data
+            // reading html file to send as data
             ifstream html("index.html");
-
-            if(!html.is_open()){
-                std::cerr << " ERROR: could not open file index.html " << std::endl;
+            if (html.is_open())
+            {
+                stringstream buffer;
+                buffer << html.rdbuf(); // read the whole file at once
+                res.data = buffer.str();
+                html.close();
+            }
+            else
+            {
+                res.data = "<h1>404 Not Found</h1>";
+                res.status_code = 404;
             }
 
-            string line;
-            string fileContent;
-            if(getline(html, line)){
-                fileContent += line + "\n";
-            }
-
-            res.data = fileContent;
+            string headers = "Content-Type: text/html\r\n";
+            headers += "Content-Length: " + to_string(res.data.length()) + "\r\n";
+            headers += "Connection: close\r\n";
+            headers += "\r\n"; // end of headers section
 
             // construct http response
 
             std::stringstream resStream;
 
-            resStream << res.version << " "<<res.status_code << " "<< res.status_text << "\r\n" << res.headers << "\r\n" << res.data;
-            string temp = resStream.str();
-            const char* response = temp.c_str();
+            resStream << res.version << " " << res.status_code << " " << res.status_text << "\r\n"
+                      << headers
+                      << res.data;
+
+            string finalResponse = resStream.str();
 
             // send response over client_socket
 
-            send(client_socket, response, (int)strlen(response), 0); // 0 means remote host has performed an orderly shutdown of its end of the connection
+            send(client_socket, finalResponse.c_str(), finalResponse.length(), 0); // 0 means remote host has performed an orderly shutdown of its end of the connection
 
             // shutdown receive and send on socket
 
