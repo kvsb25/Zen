@@ -83,7 +83,7 @@ int main()
                 }
 
                 // preventing overflow this way. But it might cause data loss on the application layer, so will implement vector buffer later
-                bytesRecv = recv(client_socket, buff + totalBytesRecv, (int)DEFAULT_BUFLEN - totalBytesRecv, 0);
+                bytesRecv = recv(client_socket, buff + totalBytesRecv, (int)DEFAULT_BUFLEN - totalBytesRecv, 0); // 0 means remote host has performed an orderly shutdown of its end of the connection
                 if (bytesRecv > 0)
                 {
                     totalBytesRecv += bytesRecv;
@@ -139,11 +139,16 @@ int main()
             std::stringstream resStream;
 
             resStream << res.version << " "<<res.status_code << " "<< res.status_text << "\r\n" << res.headers << "\r\n" << res.data;
-            string response = resStream.str();
+            string temp = resStream.str();
+            const char* response = temp.c_str();
 
             // send response over client_socket
-            
-            // shutdown read and write on socket
+
+            send(client_socket, response, (int)strlen(response), 0); // 0 means remote host has performed an orderly shutdown of its end of the connection
+
+            // shutdown receive and send on socket
+
+            shutdown(client_socket, 2); // 2 for shutting down both, receive and send operations on socket client_socket
 
             closesocket(client_socket);
         };
