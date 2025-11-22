@@ -46,11 +46,25 @@ int main()
             return 1;
         }
 
+        //listen
+        if(listen(main_socket, 20) == SOCKET_ERROR){
+            std::cout << "Listen failed with error: " << WSAGetLastError() << std::endl;
+            WSACleanup();
+            return 1;
+        }
+
+        // main loop
         while (true)
         {
+            
         };
 
-        closesocket(main_socket);
+        iResult = closesocket(main_socket);
+        if(iResult == SOCKET_ERROR){
+            std::cout << "socket close failed with error: " << WSAGetLastError() << std::endl;
+            WSACleanup();
+            return 1;
+        }
         WSACleanup();
     }
     catch (const std::exception &e)
