@@ -1,4 +1,6 @@
 #include <iostream>
+#include <fstream>
+#include <sstream>
 // #include<exception>
 // #include<stdexcept>
 #include <winsock2.h>
@@ -101,20 +103,47 @@ int main()
             int second_space = request.find(' ', first_space + 1);
             int third_space = request.find('\r\n', second_space + 1);
             struct Response{
-                string method;
-                string uri;
                 string version;
+                int status_code;
+                string status_text;
+                string headers;
                 string data;
             };
 
             Response res;
 
-            res.method = request.substr(0,first_space);
-            res.uri = request.substr(first_space+1, second_space -(first_space + 1));
+            string method = request.substr(0,first_space);
+            string uri = request.substr(first_space+1, second_space -(first_space + 1));
             res.version = request.substr(second_space+1, third_space - (second_space + 1));
-            res.data = "this is a test response from tcpServer";
+            res.status_code = 200;
+            res.status_text = "OK";
+            res.headers = "Content-Type: text/html\r\nContent-Length: 1234\r\nDate: Thu, 21 Nov 2025 19:29:07 GMT\r\n";
 
-            cout<<res.method<< " " << res.uri << " " << res.version << " ";
+              // reading html file to send as data
+            ifstream html("index.html");
+
+            if(!html.is_open()){
+                std::cerr << " ERROR: could not open file index.html " << std::endl;
+            }
+
+            string line;
+            string fileContent;
+            if(getline(html, line)){
+                fileContent += line + "\n";
+            }
+
+            res.data = fileContent;
+
+            // construct http response
+
+            std::stringstream resStream;
+
+            resStream << res.version << " "<<res.status_code << " "<< res.status_text << "\r\n" << res.headers << "\r\n" << res.data;
+            string response = resStream.str();
+
+            // send response over client_socket
+            
+            // shutdown read and write on socket
 
             closesocket(client_socket);
         };
