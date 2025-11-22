@@ -88,9 +88,35 @@ int main()
                     cout << "bytes received: " << bytesRecv << std::endl;
                 } else {
                     cout << "recv failed: " << WSAGetLastError() << std::endl;
+                    WSACleanup();
+                    return 1;
                 }
 
             } while(bytesRecv > 0);
+
+            //***************************************** Process data *****************************************
+            string request(buff); // converting char* to std::string
+
+            int first_space = request.find(' ');
+            int second_space = request.find(' ', first_space + 1);
+            int third_space = request.find('\r\n', second_space + 1);
+            struct Response{
+                string method;
+                string uri;
+                string version;
+                string data;
+            };
+
+            Response res;
+
+            res.method = request.substr(0,first_space);
+            res.uri = request.substr(first_space+1, second_space -(first_space + 1));
+            res.version = request.substr(second_space+1, third_space - (second_space + 1));
+            res.data = "this is a test response from tcpServer";
+
+            cout<<res.method<< " " << res.uri << " " << res.version << " ";
+
+            closesocket(client_socket);
         };
 
         iResult = closesocket(main_socket);
