@@ -16,12 +16,15 @@ std::string ClientSession::recvFromClient(){
             buff.resize(buff.size()*2);
         }
 
+        // call recv(for client's socket, buff starting mem addr, available space that can be filled, remote entity closes the connection)
         bytesRecv = recv(
             this->socket, 
             buff.data() + totalBytesRecv, 
             buff.size() - totalBytesRecv, 
             0
         );
+
+        // check if all data received 
         if(bytesRecv > 0){
             totalBytesRecv += bytesRecv;
         } else if(bytesRecv == 0) {
@@ -31,5 +34,6 @@ std::string ClientSession::recvFromClient(){
             break;
         }
     }
+    
     return std::string(buff.data(), totalBytesRecv);
 }
