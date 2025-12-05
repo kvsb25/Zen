@@ -28,3 +28,9 @@ TcpServer::TcpServer(u_short port)
         exitWithError("main_socket listen failed");
     }
 }
+
+TcpServer::~TcpServer(){
+    closesocket(main_socket);
+    WSACleanup();
+    exit(0);
+}
