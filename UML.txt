@@ -152,3 +152,20 @@ shall be mentioned in the closures
 405 Method Not Allowed
 500 Internal Server Error
 503 Service Unavailable
+
+MAIN LOOP:
+while(true){
+    
+    client_socket = accept(main_socket);
+    
+    clientSession cs(client_socket);
+    string data = cs.recvFromClient(); // remove retry logic or add logic to exit thread on TTL exceed
+    
+    http::Request* req = &http.parse(data);
+    http::Response* res = new http::Response();
+    App::handle(req, res);
+    string response_string = http.constructResponse(res);
+
+    cs.sendToClient(response_string);
+    cs.closeSession();
+}
