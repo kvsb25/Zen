@@ -5,13 +5,13 @@ TcpServer::TcpServer(u_short port)
 {
     if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
     {
-        // exitWithError
+        exitWithError("WSAStartup failed");
     }
 
     main_socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
     if(main_socket < 0){
-        // exitWithError
+        exitWithError("main_socket init failed");
     }
 
     server_addr.sin_family = AF_INET;
