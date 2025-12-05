@@ -95,5 +95,9 @@ void ClientSession::sendToClient(const std::string& res){
 
 void ClientSession::closeSession(){
     buff.clear();
-    closesocket(socket);
+    if(closesocket(socket) == SOCKET_ERROR) {
+        std::cout << "Client Socket close failed with error: "
+            << WSAGetLastError() 
+            << std::endl;
+    }
 }
