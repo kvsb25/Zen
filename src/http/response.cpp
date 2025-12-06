@@ -9,12 +9,33 @@ namespace http
 
         auto iso = []{ auto t=time(nullptr); char b[32]; strftime(b,32,"%Y-%m-%dT%H:%M:%SZ", gmtime(&t)); return std::string(b); }();
         headers["date"] = iso;
+        headers["connection"] = "close";
+        headers["Content-Length"] = "0";
+        headers["Content-Type"] = "text/html";
     }
 
     Response& Response::send(std::string &data)
     {
-        body << data;
+        body = data;
+        headers["Content-Length"] = std::to_string(data.length());
         return *this;
+    }
+
+    Response& Response::sendFile(std::string& filePath){
+        std::ifstream file(filePath);
+        bool success = false;
+        if(file.is_open()){
+            std::stringstream buff;
+            buff << file.rdbuf();
+            body = buff.str();
+            file.close();
+            success = true;
+        } else {
+            // throw error here; add error handling here
+            body = "<h1>Not found</h1>";
+        }
+
+        headers["Content-Length"] = success ? std::to_string(body.length()) : "0";
     }
 
     Response& Response::status(int& code){
@@ -25,8 +46,8 @@ namespace http
         return *this;
     }
 
-    Response& Response::header(std::pair<std::string, std::string>& pair){
-        headers.insert(pair);
+    Response& Response::header(std::pair<std::string, std::string>& header){
+        headers.insert(header);
         return *this;
     }
 
