@@ -16,6 +16,6 @@ namespace http{
         Response& status(int& code);
         Response& header(std::pair<std::string, std::string>& key_value_pair);
         Response& header(std::vector<std::pair<std::string, std::string>>& headers);
-        Response& redirect(std::string& absolute_url);
+        void redirect(std::string& absolute_url);
     };
 }

@@ -37,10 +37,13 @@ namespace http
         return *this;
     }
 
-    Response& Response::redirect(std::string& url){
+    void Response::redirect(std::string& url){
         std::pair<std::string, std::string> location_header = {"Location", url};
+
         headers.insert(location_header);
-        return *this;
+        status_code = 307;
+        status_message = message_for_status.at(307);
+        return;
     }
 
 }
