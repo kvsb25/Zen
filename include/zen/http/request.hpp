@@ -11,6 +11,6 @@ namespace http{
         std::unordered_map<std::string, std::string> headers;
         std::string body;
 
-        Request();
+        Request(std::string& req_string);
     };
 }
