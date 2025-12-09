@@ -9,7 +9,9 @@ namespace http
         
         size_t req_len = raw.length();
 
+        // separate header block from body block of request
         auto hdr_end_pos = raw.find(hdr_delim);
+        // get the header block of request
         const std::string hdr_block = raw.substr(0, hdr_end_pos);
 
         std::istringstream hdr_block_ss(hdr_block);
@@ -22,8 +24,8 @@ namespace http
         // remove the '\r' at the end as getline's default delim_char is '\n' so the '\r' in '\r\n' in the first line remains in the extracted string;
         if(!start_line.empty() && start_line.back() == '\r') start_line.pop_back();
 
-        // get the first line of request
 
+        // get the first line of request
         std::istringstream temp(start_line);
         if(!(temp >> this->method >> this->path >> this->version)){ // after operation>> the same string stream is returned. So, stream becomes falsy if extraction fails, and truthy if extraction succeeds
             // extraction failed probably due to less number of sub strings separated by space in the first line of raw request string
@@ -49,12 +51,12 @@ namespace http
                 content_len = std::stoul(it->second); // string to unsigned long
             } catch (...) {throw std::runtime_error("Invalid Content-Length");}
             if(body_pos + content_len > req_len){
-                body = raw.substr(body_pos, content_len);
+                this->body = raw.substr(body_pos, content_len);
             }
         } else {
             // for requests with malformed content header having body
             if(body_pos < req_len){
-            body = raw.substr(body_pos);
+            this->body = raw.substr(body_pos);
             }
         }
     }
