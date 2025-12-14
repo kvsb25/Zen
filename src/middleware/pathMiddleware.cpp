@@ -4,6 +4,7 @@ namespace middleware
 {
     class PathMiddleware : public Middleware
     {
+    public:
         std::string method;
         std::string path;
         std::function<void(http::Request &req, http::Response &res)> handler;
