@@ -2,8 +2,9 @@
 
 namespace http
 {
-    Request::Request(std::string &raw)
+    Request::Request(std::string& raw)
     {
+    // parse raw request string
         const std::string def_delim = "\r\n";
         const std::string hdr_delim = "\r\n\r\n";
         
