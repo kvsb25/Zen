@@ -1,8 +1,8 @@
 #include "../../include/zen/app/app.hpp"
 
-http::Response& Zen::handle(http::Request& req, http::Response& res, int index = 0){
+void Zen::handle(http::Request& req, http::Response& res, int index = 0){
     
-    if(index >= pipe.size()) return res;
+    if(index >= pipe.size()) return;
 
     middleware::Middleware* mw = pipe[index];
 
@@ -10,22 +10,23 @@ http::Response& Zen::handle(http::Request& req, http::Response& res, int index =
         try{
             middleware::DefaultMiddleware* dmw = static_cast<middleware::DefaultMiddleware*>(mw);
             dmw->handler(req, res);
-            handle(req, res, ++index);
+            return handle(req, res, index+1);
         } catch (std::runtime_error& err) {
-
+            // handle error
         }
     } else if(mw->type == middleware::Type::PATH) {
         try{
             middleware::PathMiddleware* pmw = static_cast<middleware::PathMiddleware*>(mw);
-            if(pmw->method == req.method){
-                // parse and match path, if match success execute handler and return res else handle next middleware 
+            if(pmw->match(req)){
+                pmw->handler(req, res);
+                return;
             }
         } catch (std::runtime_error& err){
-
+            // handle error
         }
     }
 
-    return res;
+    return;
 }
 
 // Zen::Zen(int port): server(port){}

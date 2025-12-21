@@ -16,7 +16,7 @@ private:
     // TcpServer server;
 
 private:
-    http::Response& handle(http::Request& req, http::Response& res, int index = 0);
+    void handle(http::Request& req, http::Response& res, int index = 0);
 
 public:
     // Zen(int port); // define the port at which you want your server to listen
