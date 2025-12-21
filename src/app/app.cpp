@@ -58,5 +58,8 @@ void Zen::listen(u_short& port, std::function<void(void)> callback){
         http::Response* res = new http::Response();
 
         this->handle(*req, *res);
+
+        cs.sendToClient(res->construct());
+        cs.closeSession();
     }
 }
