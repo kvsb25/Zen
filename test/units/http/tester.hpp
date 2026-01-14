@@ -2,15 +2,31 @@
 #include "../../../include/zen/http/http.hpp"
 #include <sstream>
 
+struct ParsedRequest {
+    std::string method;
+    std::string path;
+    std::string version;
+    std::unordered_map<std::string, std::string> headers;
+    std::string body;
+};
+
+struct ParsedResponse {
+    std::string version;
+    std::string status_code;
+    std::string status_message;
+    std::unordered_map<std::string, std::string> headers;
+    std::string body;
+};
+
 class Tester{
 public:
-    http::Request* ref_req;
-    http::Request* ref_res;
+    ParsedRequest ref_req;
+    ParsedResponse ref_res;
     std::string ref_req_str;
     std::string ref_res_str;
 
 public:
-    Tester(std::string& ref_req_string, std::string& ref_res);
+    Tester(ParsedRequest& ref_parsed_req, ParsedResponse& ref_parsed_res);
     ~Tester();
-    bool test(std::string& req_str, std::string& res_str);
+    bool wireFormatTest(std::string& req_str, std::string& res_str);
 };
