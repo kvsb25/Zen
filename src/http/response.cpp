@@ -14,7 +14,7 @@ namespace http
         headers["Content-Type"] = "text/html; charset=UTF-8";
     }
 
-    Response& Response::send(std::string &data)
+    Response& Response::send(const std::string& data)
     {
         body = data;
         headers["Content-Length"] = std::to_string(data.length());

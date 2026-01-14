@@ -11,7 +11,7 @@ namespace http{
         std::string body;
     public:
         Response();
-        Response& send(std::string& data);
+        Response& send(const std::string& data);
         Response& json(std::string& data);
         Response& sendFile(std::string& filePath);
         Response& status(int& code);
