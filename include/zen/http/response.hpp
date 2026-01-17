@@ -4,7 +4,7 @@
 
 namespace http{
     struct Response{
-    private:
+    public: // public only for test purposes
         int status_code;
         std::string status_message;
         std::unordered_map<std::string, std::string> headers;
@@ -12,7 +12,7 @@ namespace http{
     public:
         Response();
         Response& send(const std::string& data);
-        Response& json(std::string& data);
+        Response& json(const std::string& data);
         Response& sendFile(std::string& filePath);
         Response& status(int& code);
         Response& header(std::pair<std::string, std::string>& key_value_pair);

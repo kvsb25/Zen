@@ -21,7 +21,7 @@ namespace http
         return *this;
     }
 
-    Response& Response::json(std::string& json_string){
+    Response& Response::json(const std::string& json_string){
         body = json_string;
         headers["Content-Type"] = "application/json";
         return *this;

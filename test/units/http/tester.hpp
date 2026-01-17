@@ -12,7 +12,7 @@ struct ParsedRequest {
 
 struct ParsedResponse {
     std::string version;
-    std::string status_code;
+    int status_code;
     std::string status_message;
     std::unordered_map<std::string, std::string> headers;
     std::string body;
