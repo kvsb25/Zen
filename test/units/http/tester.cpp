@@ -9,6 +9,28 @@ Tester::~Tester()
 {
 }
 
+void print_headers(std::unordered_map<std::string, std::string>& headers){
+    
+    std::cout << "key-value pairs: " << std::endl;
+
+    for(auto header: headers){
+        std::cout << header.first << ':' << header.second << ';' << "[len:"<< header.first.length() << "," << header.second.length() <<"]" <<std::endl;
+    }
+    std::cout << "========no. of headers: " << headers.size() << "========" << std::endl;
+
+    std::cout << "ASCII Codes for header values: " << std::endl;
+    for(auto header: headers){
+        std::cout << header.first << ':' ;
+        for(auto c : header.second){
+            std::cout << (int)c << " ";
+        }
+        std::cout << std::endl;
+    }
+    std::cout << std::endl;
+    std::cout << "================" << std::endl;
+    std::cout << std::endl;
+}
+
 bool Tester::wireFormatTest(std::string& req_str, std::string& res_str)
 {
     bool pass = true;
@@ -33,12 +55,13 @@ bool Tester::wireFormatTest(std::string& req_str, std::string& res_str)
             pass = false;
             std::cout << "ERROR: Request 'headers' mismatch with ref\n\n"
                 << "test:\n";
-            for(auto header : test_req->headers){
-                std::cout << header.first << ':' << header.second << ';' << "[len:"<< header.first.length() << "," << header.second.length() <<"]" <<std::endl;
-            }
-            std::cout << "========length: " << test_req->headers.size() << "========" <<std::endl;
+            print_headers(test_req->headers);
+            // for(auto header : test_req->headers){
+            //     std::cout << header.first << ':' << header.second << ';' << "[len:"<< header.first.length() << "," << header.second.length() <<"]" <<std::endl;
+            // }
+            // std::cout << "========length: " << test_req->headers.size() << "========" <<std::endl;
 
-            std::cout<<std::endl;
+            // std::cout<<std::endl;
             std::cout<<"ref:\n";
             for(auto header : ref_req.headers){
                 std::cout << header.first << ':' << header.second << ';' << "[len:"<< header.first.length() << "," << header.second.length() <<"]" <<std::endl;

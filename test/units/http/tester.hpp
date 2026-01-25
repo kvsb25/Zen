@@ -19,14 +19,16 @@ struct ParsedResponse {
 };
 
 class Tester{
-public:
+    public:
     ParsedRequest ref_req;
     ParsedResponse ref_res;
     std::string ref_req_str;
     std::string ref_res_str;
-
-public:
+    
+    public:
     Tester(ParsedRequest& ref_parsed_req, ParsedResponse& ref_parsed_res);
     ~Tester();
     bool wireFormatTest(std::string& req_str, std::string& res_str);
 };
+
+void prints_headers(std::unordered_map<std::string, std::string>& map); // prints req headers if req = true else prints response headers
