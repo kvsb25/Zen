@@ -64,7 +64,7 @@ bool Tester::wireFormatTest(std::string& req_str, std::string& res_str)
     
     // form res with http::Response module
     http::Response test_res;
-    test_res.json(R"({ "message": "API Framework Working" })");
+    test_res.json(ref_res.body);
     test_res.construct();
     
     // match res with ref_res, log false for mismatch
