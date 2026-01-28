@@ -8,7 +8,7 @@ void Zen::handle(http::Request& req, http::Response& res, int index = 0){
 
     if(mw->type == middleware::Type::DEFAULT){
         try{
-            middleware::DefaultMiddleware* dmw = static_cast<middleware::DefaultMiddleware*>(mw);
+            middleware::DefaultMiddleware* dmw = static_cast<middleware::DefaultMiddleware*>(mw);  // down cast
             dmw->handler(req, res);
             return handle(req, res, index+1);
         } catch (std::runtime_error& err) {
@@ -16,7 +16,7 @@ void Zen::handle(http::Request& req, http::Response& res, int index = 0){
         }
     } else if(mw->type == middleware::Type::PATH) {
         try{
-            middleware::PathMiddleware* pmw = static_cast<middleware::PathMiddleware*>(mw);
+            middleware::PathMiddleware* pmw = static_cast<middleware::PathMiddleware*>(mw);    // down cast
             if(pmw->match(req)){
                 pmw->handler(req, res);
                 return;

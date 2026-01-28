@@ -12,7 +12,7 @@
 
 class Zen{
 private:
-    std::vector<middleware::Middleware*> pipe;
+    std::vector<middleware::Middleware*> pipe; // try to convert to std::vector<std::unique_ptr<middleware::Middleware>>
     // TcpServer server;
 
 private:

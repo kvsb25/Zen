@@ -22,7 +22,7 @@ namespace http
     }
 
     Response& Response::json(const std::string& json_string){
-        body = json_string;
+        // can apply triming whitespace logic to reduce payload size
         headers["Content-Type"] = "application/json";
         headers["Content-Length"] = std::to_string(json_string.length());
         return *this;
