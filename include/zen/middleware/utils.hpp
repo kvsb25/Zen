@@ -15,6 +15,6 @@ namespace middleware{
     public:
         Type type;
     protected:
-        Middleware(Type t);
+        Middleware(Type t):type(t){};
     };
 }

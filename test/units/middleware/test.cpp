@@ -36,6 +36,8 @@ int main(){
             if(pm->match(req)){
                 pm->handler(req, res);
                 break;
+            } else {
+                std::cout << "Match result: " << pm->match(req);
             }
         }
     }
