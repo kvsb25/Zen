@@ -28,7 +28,7 @@ namespace middleware
         std::string regex_str = "^";
 
         if(segments.empty()){
-            regex_str += "/$";
+            regex_str += "/$"; // for path: '/' 
         } else {
 
             for(auto const& seg : segments){
@@ -46,6 +46,7 @@ namespace middleware
                 } else {
                     // Static seg 
                     for(auto const& c : seg){
+                        // ignore special characters
                         if(std::string(".^$|()[]*+?{}\\").find(c) != std::string::npos)
                             continue;
                         regex_str += c;
@@ -92,7 +93,9 @@ namespace middleware
 
             // set req query params
             std::string query_params_string = req.path.substr(query_pos+1);
-            
+            req.query = http::parseQueryParams(query_params_string);
+
+            // set req body here, because suppose a request with route, for which a middleware doesn't exist on the server, is sent then time and space will be consumed to parse the body of the req even though it won't be of use as there is not middleware for it
         }
 
         return match;

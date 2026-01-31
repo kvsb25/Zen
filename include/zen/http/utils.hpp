@@ -6,7 +6,7 @@
 #include <sstream>
 #include <chrono>
 #include <fstream>
-// #include <variant>
+#include <regex>
 
 namespace http
 {
@@ -104,7 +104,6 @@ namespace http
         // 5xx
         500, 501, 502, 503, 504, 505, 506, 507, 508, 510, 511};
     
-    template <typename T>
     // std::unordered_map<std::string, queryVal> parseQueryParams(std::string param_string){
     //     // parse query params
 
