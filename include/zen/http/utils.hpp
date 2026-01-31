@@ -6,9 +6,16 @@
 #include <sstream>
 #include <chrono>
 #include <fstream>
+// #include <variant>
 
 namespace http
 {
+    // using queryVal = std::variant<
+    //     int,
+    //     std::vector<int>, 
+    //     std::unordered_map<std::string, std::string>
+    // >;
+
     const std::unordered_map<int, std::string> message_for_status = {
         // --- 1xx Informational ---
         {100, "Continue"},
@@ -96,4 +103,48 @@ namespace http
         421, 422, 423, 424, 425, 426, 428, 429, 431, 451,
         // 5xx
         500, 501, 502, 503, 504, 505, 506, 507, 508, 510, 511};
+    
+    template <typename T>
+    // std::unordered_map<std::string, queryVal> parseQueryParams(std::string param_string){
+    //     // parse query params
+
+    // }
+
+    std::unordered_map<std::string, std::vector<std::string>> parseQueryParams(std::string s){ // s == params strings
+        std::stringstream ss(s);
+        std::vector<std::pair<std::string, std::string>> pairs;
+        std::string temp;
+
+        while(std::getline(ss, temp, '&')){
+            size_t pos = temp.find('=');
+            pairs.push_back({temp.substr(0,pos), temp.substr(pos+1)});
+        }
+
+        ss.clear();
+        std::unordered_map<std::string, std::vector<std::string>> queryParams; 
+
+        for(int i = 0 ; i < s.size(); i++){
+            auto [key, value] = pairs[i];
+            
+            std::regex pat(R"(.\[\])");
+            if(std::regex_search(key, pat)){
+                size_t pos = key.find('[');
+                // if(pos != std::string::npos)
+                key = key.substr(0, pos+1);
+            }
+
+            std::vector<std::string> values;
+            if(value.find(',') != std::string::npos){
+                ss << value;
+
+                while(std::getline(ss, value, ',')){
+                    values.push_back(value);
+                }
+            }
+
+            queryParams.insert({key, values});
+        }
+
+        return queryParams;
+    }
 }
