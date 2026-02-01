@@ -23,12 +23,13 @@ namespace http
 
     Response& Response::json(const std::string& json_string){
         // can apply triming whitespace logic to reduce payload size
-        headers["Content-Type"] = "application/json";
-        headers["Content-Length"] = std::to_string(json_string.length());
+        this->body = json_string;
+        this->headers["Content-Type"] = "application/json";
+        this->headers["Content-Length"] = std::to_string(json_string.length());
         return *this;
     }
 
-    Response& Response::sendFile(std::string& filePath){
+    Response& Response::sendFile(const std::string& filePath){
         std::ifstream file(filePath);
         bool success = false;
         if(file.is_open()){
@@ -47,7 +48,7 @@ namespace http
         return *this;
     }
 
-    Response& Response::status(int& code){
+    Response& Response::status(const int& code){
         if(valid_codes.count(code)>0){
             status_code = code;
             status_message = message_for_status.at(code);
@@ -77,7 +78,7 @@ namespace http
         return *this;
     }
 
-    void Response::redirect(std::string& url){
+    void Response::redirect(const std::string& url){
         std::pair<std::string, std::string> location_header = {"Location", url};
 
         headers.insert(location_header);

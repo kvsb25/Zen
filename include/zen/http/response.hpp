@@ -13,12 +13,12 @@ namespace http{
         Response();
         Response& send(const std::string& data);
         Response& json(const std::string& data);
-        Response& sendFile(std::string& filePath);
-        Response& status(int& code);
+        Response& sendFile(const std::string& filePath);
+        Response& status(const int& code);
         Response& header(std::pair<std::string, std::string>& key_value_pair);
         // Response& setHeader(std::string key, std::string value);
         Response& header(std::vector<std::pair<std::string, std::string>>& headers);
-        void redirect(std::string& absolute_url);
+        void redirect(const std::string& absolute_url);
         std::string construct() const;
     };
 }
