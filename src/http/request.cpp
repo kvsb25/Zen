@@ -64,4 +64,42 @@ namespace http
             }
         }
     }
+
+    std::unordered_map<std::string, std::vector<std::string>> parseQueryParams(std::string s){ // s == params strings
+        std::stringstream ss(s);
+        std::vector<std::pair<std::string, std::string>> pairs;
+        std::string temp;
+
+        while(std::getline(ss, temp, '&')){
+            size_t pos = temp.find('=');
+            pairs.push_back({temp.substr(0,pos), temp.substr(pos+1)});
+        }
+
+        ss.clear();
+        std::unordered_map<std::string, std::vector<std::string>> queryParams; 
+
+        for(int i = 0 ; i < s.size(); i++){
+            auto [key, value] = pairs[i];
+            
+            std::regex pat(R"(.\[\])");
+            if(std::regex_search(key, pat)){
+                size_t pos = key.find('[');
+                // if(pos != std::string::npos)
+                key = key.substr(0, pos+1);
+            }
+
+            std::vector<std::string> values;
+            if(value.find(',') != std::string::npos){
+                ss << value;
+
+                while(std::getline(ss, value, ',')){
+                    values.push_back(value);
+                }
+            }
+
+            queryParams.insert({key, values});
+        }
+
+        return queryParams;
+    }
 }

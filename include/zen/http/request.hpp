@@ -21,4 +21,6 @@ namespace http{
 
         Request(std::string& req_string);
     };
+
+    std::unordered_map<std::string, std::vector<std::string>> parseQueryParams(std::string s);
 }
