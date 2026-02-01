@@ -70,7 +70,6 @@ namespace middleware
 
     bool PathMiddleware::match(http::Request& req){
         // return true if the request url and method matches the middleware attributes method and path:Route
-        
         bool match = false;
         std::smatch m;
 
@@ -78,8 +77,8 @@ namespace middleware
         std::string req_eff_path = (query_pos != std::string::npos) ? req.path.substr(0,query_pos) : req.path;
 
         // test
-            std::cout << "req.method: " << req.method << std::endl << "this->method: " << this->method << std::endl << std::endl;
-            std::cout << "req.path: " << req.path << std::endl << "this->route.path_regex: " << std::endl << std::endl;
+            // std::cout << "req.method: " << req.method << std::endl << "this->method: " << this->method << std::endl << std::endl;
+            // std::cout << "req.path: " << req.path << std::endl << std::endl;
         //
 
         // if method of req == method of pathMidd && path of req == path of pathMidd
