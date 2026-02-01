@@ -66,10 +66,12 @@ namespace http
     }
 
     std::unordered_map<std::string, std::vector<std::string>> parseQueryParams(std::string s){ // s == params strings
+        std::cout << "in parseQueryParams" << std::endl;
         std::stringstream ss(s);
         std::vector<std::pair<std::string, std::string>> pairs;
         std::string temp;
 
+        // get the key-value pairs
         while(std::getline(ss, temp, '&')){
             size_t pos = temp.find('=');
             pairs.push_back({temp.substr(0,pos), temp.substr(pos+1)});
@@ -78,7 +80,7 @@ namespace http
         ss.clear();
         std::unordered_map<std::string, std::vector<std::string>> queryParams; 
 
-        for(int i = 0 ; i < s.size(); i++){
+        for(int i = 0 ; i < pairs.size(); i++){
             auto [key, value] = pairs[i];
             
             std::regex pat(R"(.\[\])");
