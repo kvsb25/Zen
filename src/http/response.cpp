@@ -43,6 +43,8 @@ namespace http
         }
 
         headers["Content-Length"] = success ? std::to_string(body.length()) : "0";
+
+        return *this;
     }
 
     Response& Response::status(int& code){
