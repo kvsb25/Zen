@@ -15,10 +15,10 @@ namespace middleware
         }
 
         //test
-            std::cout << "CONSTRUCTOR: Path segments: " << std::endl;
-            for(auto const& seg: segments){
-                std::cout<<seg<<", ";
-            }
+            // std::cout << "CONSTRUCTOR: Path segments: " << std::endl;
+            // for(auto const& seg: segments){
+            //     std::cout<<seg<<", ";
+            // }
         //
 
         ss.clear();
@@ -33,8 +33,8 @@ namespace middleware
 
             for(auto const& seg : segments){
                 //test
-                    std::cout << "CONSTRUCTOR: seg: " << seg << std::endl;
-                    std::cout << "CONSTRUCTOR: (seg[0]==':'): " << (seg[0]==':') << std::endl;
+                    // std::cout << "CONSTRUCTOR: seg: " << seg << std::endl;
+                    // std::cout << "CONSTRUCTOR: (seg[0]==':'): " << (seg[0]==':') << std::endl;
                 //
                 regex_str += '/';
                 if(seg[0] == ':'){
@@ -47,11 +47,18 @@ namespace middleware
                     // Static seg 
                     for(auto const& c : seg){
                         // ignore special characters
-                        if(std::string(".^$|()[]*+?{}\\").find(c) != std::string::npos)
+                        if(std::string(".^$|()[]*+{}\\").find(c) != std::string::npos){
                             continue;
+                        }
                         regex_str += c;
                     }
                 }
+            }
+
+            // remove trailing query params if any;
+            size_t pos = regex_str.find('?');
+            if(pos != std::string::npos){
+                regex_str = regex_str.substr(0,pos);
             }
 
             regex_str += "/?$";
@@ -59,7 +66,7 @@ namespace middleware
 
 
         //test
-        std::cout << "CONSTRUCTOR: regex pattern string formed: " << regex_str << std::endl;
+            std::cout << "CONSTRUCTOR: regex pattern string formed: " << regex_str << std::endl;
         // full path regex. 
         // std::regex r(regex_temp.str());
         std::regex r(regex_str);
@@ -91,9 +98,11 @@ namespace middleware
             }
 
             // set req query params
-            std::string query_params_string = req.path.substr(query_pos+1);
-            req.query = http::parseQueryParams(query_params_string);
-
+            if(query_pos != std::string::npos){
+                std::string query_params_string = req.path.substr(query_pos+1);
+                std::cout << "query_params_string" << query_params_string << std::endl;
+                req.query = http::parseQueryParams(query_params_string);
+            }
             // set req body here, because suppose a request with route, for which a middleware doesn't exist on the server, is sent then time and space will be consumed to parse the body of the req even though it won't be of use as there is not middleware for it
         }
 
