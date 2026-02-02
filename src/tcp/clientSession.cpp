@@ -33,6 +33,7 @@ std::string ClientSession::recvFromClient(){
         if(buff.size() > (int)MAX_REQUEST_SIZE){
             std::cout << "Request rejected, too large." << std::endl;
             break;
+            // RETURN ERROR STRING
         }
 
         // call recv(for client's socket, buff starting mem addr, available space that can be filled, remote entity closes the connection)
