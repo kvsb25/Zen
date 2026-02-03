@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <vector>
+#include <memory>
 #include <functional>
 #include "../../../include/zen/http/http.hpp"
 #include "../../../include/zen/middleware/middleware.hpp"
@@ -12,7 +13,7 @@
 
 class Zen{
 private:
-    std::vector<middleware::Middleware*> pipe; // try to convert to std::vector<std::unique_ptr<middleware::Middleware>>
+    std::vector<std::unique_ptr<middleware::Middleware>> pipe; // try to convert to std::vector<std::unique_ptr<middleware::Middleware>>
     // TcpServer server;
 
 private:

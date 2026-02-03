@@ -4,11 +4,11 @@ void Zen::handle(http::Request& req, http::Response& res, int index = 0){
     
     if(index >= pipe.size()) return;
 
-    middleware::Middleware* mw = pipe[index];
+    middleware::Middleware* mw = pipe[index].get(); // create a borrowed raw pointer of the unique_ptr at 'index' in pipe // DON'T DELETE mw MANUALLY
 
     if(mw->type == middleware::Type::DEFAULT){
         try{
-            middleware::DefaultMiddleware* dmw = static_cast<middleware::DefaultMiddleware*>(mw);  // down cast
+            auto* dmw = static_cast<middleware::DefaultMiddleware*>(mw);  // down cast
             dmw->handler(req, res);
             return handle(req, res, index+1);
         } catch (std::runtime_error& err) {
@@ -16,7 +16,7 @@ void Zen::handle(http::Request& req, http::Response& res, int index = 0){
         }
     } else if(mw->type == middleware::Type::PATH) {
         try{
-            middleware::PathMiddleware* pmw = static_cast<middleware::PathMiddleware*>(mw);    // down cast
+            auto* pmw = static_cast<middleware::PathMiddleware*>(mw);    // down cast
             if(pmw->match(req)){
                 pmw->handler(req, res);
                 return;
@@ -33,16 +33,18 @@ void Zen::handle(http::Request& req, http::Response& res, int index = 0){
 Zen::Zen() {}
 
 Zen& Zen::use(std::function<void(http::Request&, http::Response&)> callback){
-    middleware::DefaultMiddleware* mw = new middleware::DefaultMiddleware(callback);
-    pipe.push_back(mw);
+    auto mw = std::make_unique<middleware::DefaultMiddleware>(callback);
+    pipe.push_back(std::move(mw));
+    return *this;
 }
 
 Zen& Zen::use(std::string method, std::string path, std::function<void(http::Request&, http::Response&)> callback){
-    middleware::PathMiddleware* mw = new middleware::PathMiddleware(method, path, callback);
-    pipe.push_back(mw);
+    auto mw = std::make_unique<middleware::PathMiddleware>(method, path, callback);
+    pipe.push_back(std::move(mw));
+    return *this;
 }
 
-void Zen::listen(const u_short& port, std::function<void(void)> callback){
+void Zen::listen(const u_short& port, std::function<void(void)> callback = [](){}){
     TcpServer server(port);
     callback();
 
@@ -54,12 +56,12 @@ void Zen::listen(const u_short& port, std::function<void(void)> callback){
 
         std::string data = cs.recvFromClient();
 
-        http::Request* req = new http::Request(data);
-        http::Response* res = new http::Response();
+        http::Request req(data);
+        http::Response res;
 
-        this->handle(*req, *res);
+        this->handle(req, res);
 
-        cs.sendToClient(res->construct());
+        cs.sendToClient(res.construct());
         cs.closeSession();
     }
 }

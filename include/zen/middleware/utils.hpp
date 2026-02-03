@@ -14,7 +14,8 @@ namespace middleware{
     class Middleware {
     public:
         Type type;
-    protected:
+        virtual ~Middleware() = default;
+    protected: // protected constructor is used as this class is only an abstract class and we don't want objects to be instantiated from the class
         Middleware(Type t):type(t){};
     };
 }
