@@ -80,14 +80,16 @@ namespace http
         ss.clear();
         std::unordered_map<std::string, std::vector<std::string>> queryParams; 
 
+        // set the map. each key maps to vector of values.
         for(int i = 0 ; i < pairs.size(); i++){
             auto [key, value] = pairs[i];
             
+            // check for array
             std::regex pat(R"(.\[\])");
             if(std::regex_search(key, pat)){
                 size_t pos = key.find('[');
                 // if(pos != std::string::npos)
-                key = key.substr(0, pos+1);
+                key = key.substr(0, pos+2);
             }
 
             std::vector<std::string> values;
@@ -97,6 +99,8 @@ namespace http
                 while(std::getline(ss, value, ',')){
                     values.push_back(value);
                 }
+            } else {
+                queryParams[key].push_back(value); 
             }
 
             queryParams.insert({key, values});
