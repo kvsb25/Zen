@@ -3,7 +3,7 @@
 int main(){
 
     std::string req_string =
-        "POST /vendor/product?id=123 HTTP/1.1\r\n"
+        "GET /vendor/product/1234 HTTP/1.1\r\n"
         "Host: localhost:3000\r\n"
         "User-Agent: MicroFrameworkTest/1.0\r\n"
         "Accept: application/json\r\n"
@@ -32,14 +32,25 @@ int main(){
             << "req.body: " << req.body << std::endl;
         if(!req.query.empty()) {
             for(auto const& p : req.query){
-                std::cout << "key" << p.first << std::endl;
+                std::cout << "key: " << p.first  << std::endl;
+                std::cout << "value: " << !p.second.empty() << std::endl;
+                if(!p.second.empty()){
+                    for(auto const& v : p.second){
+                        std::cout << v << std::endl;
+                    }
+                }
             }
         }
+        std::cout << "req.params" << std::endl;
+        for(auto a : req.params){
+            std::cout << "key: " << a.first << " value: " << a.second << std::endl;
+        }
+        std::cout << "Product ID: " << req.params["id"];
         res.json("{\"message\": \"received successfully\"}");
         return;
     };
 
-    middleware::Middleware* pm2 = new middleware::PathMiddleware("POST", "/vendor/product", handler); //?id=123
+    middleware::Middleware* pm2 = new middleware::PathMiddleware("GET", "/vendor/product/:id", handler); //?id=123
 
     middleware::Middleware* dm = new middleware::DefaultMiddleware([](http::Request& req, http::Response& res){
         std::cout << "Default middleware 1" << std::endl;
@@ -49,8 +60,11 @@ int main(){
     // std::vector<std::unique_ptr<middleware::Middleware>> pipe;
 
     std::vector<middleware::Middleware*> pipe;
+    pipe.push_back(dm);
+    pipe.push_back(dm);
     pipe.push_back(pm);
     pipe.push_back(pm2);
+    pipe.push_back(dm);
 
     for(auto m : pipe){
         if(m->type == middleware::Type::DEFAULT){
