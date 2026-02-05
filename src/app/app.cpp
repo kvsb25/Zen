@@ -1,6 +1,6 @@
 #include "../../include/zen/app/app.hpp"
 
-void Zen::handle(http::Request& req, http::Response& res, int index = 0){
+void Zen::handle(http::Request& req, http::Response& res, int index){
     
     if(index >= pipe.size()) return;
 
@@ -44,16 +44,15 @@ Zen& Zen::use(std::string method, std::string path, std::function<void(http::Req
     return *this;
 }
 
-void Zen::listen(const u_short& port, std::function<void(void)> callback = [](){}){
+void Zen::listen(const u_short& port, std::function<void(void)> callback){
     TcpServer server(port);
     callback();
 
     while(true){
         SOCKET client_socket = INVALID_SOCKET;
         client_socket = accept(server.getMainSocket(), NULL, NULL);
-
-        ClientSession cs(client_socket);
-
+        
+        ClientSession cs(client_socket);    
         std::string data = cs.recvFromClient();
 
         http::Request req(data);
@@ -62,6 +61,5 @@ void Zen::listen(const u_short& port, std::function<void(void)> callback = [](){
         this->handle(req, res);
 
         cs.sendToClient(res.construct());
-        cs.closeSession();
     }
 }
