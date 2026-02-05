@@ -1,0 +1,2 @@
+g++ "../../../src/app/app.cpp" "../../../src/middleware/defaultMiddleware.cpp" "../../../src/middleware/pathMiddleware.cpp" "../../../src/http/request.cpp" "../../../src/http/response.cpp" "./test.cpp" "./tester.cpp" "..\..\..\src\tcp\tcpServer.cpp" "..\..\..\src\tcp\clientSession.cpp" -o test.exe -lws2_32;
+if($?){.\test.exe};
