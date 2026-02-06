@@ -49,18 +49,31 @@ void Zen::listen(const u_short& port, std::function<void(void)> callback){
     TcpServer server(port);
     callback();
 
-    while(true){
-        SOCKET client_socket = INVALID_SOCKET;
-        client_socket = accept(server.getMainSocket(), NULL, NULL);
-        
-        ClientSession cs(client_socket);    
-        std::string data = cs.recvFromClient();
+    try{
 
-        http::Request req(data);
-        http::Response res;
 
-        this->handle(req, res);
+        while(true){
+            SOCKET client_socket = INVALID_SOCKET;
+            client_socket = accept(server.getMainSocket(), NULL, NULL);
+            
+            ClientSession cs(client_socket);    
+            std::string data = cs.recvFromClient();
 
-        cs.sendToClient(res.construct());
+            http::Request req(data);
+            http::Response res;
+
+            this->handle(req, res);
+
+            cs.sendToClient(res.construct());
+        }
+
+
+    } catch (const WinsockErr& e){
+        std::cerr<<e.what()<<std::endl;
+        if(!e.cleaned){
+            WSACleanup();
+        }
+    } catch (const std::runtime_error& e){
+        std::cerr<<e.what()<<std::endl;
     }
 }

@@ -1,11 +1,7 @@
 #pragma once
 
 #include<iostream>
-#include<winsock2.h>
-
-void log(const std::string& message);
-
-void exitWithError(const std::string& errorMessage);
+#include "utils.hpp"
 
 class TcpServer{
 private:
@@ -15,6 +11,6 @@ private:
 public:
     TcpServer(u_short port);
     ~TcpServer();
-    void start();  // contains main loop and shoots a thread for client session handling
+    //void start();  // contains main loop and shoots a thread for client session handling
     SOCKET& getMainSocket();
 };
