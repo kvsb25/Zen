@@ -28,7 +28,7 @@ namespace http
 
         // get the first line of request
         std::istringstream temp(start_line);
-        if(!(temp >> this->method >> this->path >> this->version)){ // after operation>> the same string stream is returned. So, stream becomes falsy if extraction fails, and truthy if extraction succeeds
+        if(!(temp >> this->method >> this->path >> this->version)){ // after operation >> the same string stream is returned. So, stream becomes falsy if extraction fails, and truthy if extraction succeeds
             // extraction failed probably due to less number of sub strings separated by space in the first line of raw request string
             // handle error
         };
