@@ -25,6 +25,7 @@ void Zen::handle(http::Request& req, http::Response& res, int index){
             // handle error
         }
     }
+    // delete all pointers on error 
 
     return;
 }
