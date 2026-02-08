@@ -67,9 +67,15 @@ void Zen::listen(const u_short& port, std::function<void(void)> callback){
             this->handle(req, res);
 
             } catch(const HttpErr& e){
+
+                std::cerr << e.what() << std::endl;
                 res.initErrRes(e.http_err_code, e.what());
+                
             } catch(const std::runtime_error& e){
+
+                std::cerr << e.what() << std::endl;
                 res.initErrRes(500, e.what());
+
             }
             cs.sendToClient(res.construct());
         }
