@@ -4,7 +4,9 @@ namespace http
 {
     Request::Request(std::string& raw)
     {
-    // parse raw request string
+        try{
+        // parse raw request string
+
         const std::string def_delim = "\r\n";
         const std::string hdr_delim = "\r\n\r\n";
         
@@ -20,6 +22,7 @@ namespace http
 
         if(!std::getline(hdr_block_ss, start_line)){
             // empty request, handle error
+            throw HttpErr(400, "Empty Request");
         };
 
         // remove the '\r' at the end as getline's default delim_char is '\n' so the '\r' in '\r\n' in the first line remains in the extracted string;
@@ -31,6 +34,7 @@ namespace http
         if(!(temp >> this->method >> this->path >> this->version)){ // after operation >> the same string stream is returned. So, stream becomes falsy if extraction fails, and truthy if extraction succeeds
             // extraction failed probably due to less number of sub strings separated by space in the first line of raw request string
             // handle error
+            throw HttpErr(400, "Corrupted Request Line");
         };
 
         // get the headers
@@ -53,7 +57,9 @@ namespace http
             try{
                 content_len = std::stoul(it->second); // string to unsigned long
                 // std::cout << "REQUEST CONSTRUCTOR - HTTP REQUEST BODY PARSING" << content_len << std::endl;
-            } catch (...) {throw std::runtime_error("Invalid Content-Length");}
+            } catch (...) {
+                throw HttpErr(400, "Invalid Request Content-Length");
+            }
             if(body_pos + content_len >= req_len){
                 this->body = raw.substr(body_pos, content_len);
             }
@@ -62,6 +68,9 @@ namespace http
             if(body_pos < req_len){
             this->body = raw.substr(body_pos);
             }
+        }
+        } catch(...){
+            throw;
         }
     }
 

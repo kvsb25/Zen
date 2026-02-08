@@ -2,15 +2,30 @@
 
 namespace http
 {
+
     Response::Response()
     {
         status_code = 200;
         status_message = message_for_status.at(200);
-
+        
         auto iso = []{ auto t=time(nullptr); char b[32]; strftime(b,32,"%Y-%m-%dT%H:%M:%SZ", gmtime(&t)); return std::string(b); }();
         headers["Date"] = iso;
         headers["Connection"] = "close";
         headers["Content-Length"] = "0";
+        headers["Content-Type"] = "text/html; charset=UTF-8";
+    }
+    
+    void Response::initErrRes(int code, const std::string& msg){
+        status_code = code;
+        status_message = message_for_status.at(code);
+
+        body = msg;
+
+        headers.clear();
+        auto iso = []{ auto t=time(nullptr); char b[32]; strftime(b,32,"%Y-%m-%dT%H:%M:%SZ", gmtime(&t)); return std::string(b); }();
+        headers["Date"] = iso;
+        headers["Connection"] = "close";
+        headers["Content-Length"] = std::to_string(body.length());
         headers["Content-Type"] = "text/html; charset=UTF-8";
     }
 

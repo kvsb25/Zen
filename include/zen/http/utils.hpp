@@ -7,14 +7,10 @@
 #include <chrono>
 #include <fstream>
 #include <regex>
+#include "err.hpp"
 
 namespace http
 {
-    // using queryVal = std::variant<
-    //     int,
-    //     std::vector<int>, 
-    //     std::unordered_map<std::string, std::string>
-    // >;
 
     const std::unordered_map<int, std::string> message_for_status = {
         // --- 1xx Informational ---

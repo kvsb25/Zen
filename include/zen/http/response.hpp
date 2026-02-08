@@ -9,7 +9,9 @@ namespace http{
         std::string status_message;
         std::unordered_map<std::string, std::string> headers;
         std::string body;
+    private:
     public:
+        void initErrRes(int status_code, const std::string& message);
         Response();
         Response& send(const std::string& data);
         Response& json(const std::string& data);

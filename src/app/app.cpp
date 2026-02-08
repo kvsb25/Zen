@@ -59,11 +59,18 @@ void Zen::listen(const u_short& port, std::function<void(void)> callback){
             ClientSession cs(client_socket);    
             std::string data = cs.recvFromClient();
 
-            http::Request req(data);
             http::Response res;
+            try{
+
+            http::Request req(data);
 
             this->handle(req, res);
 
+            } catch(const HttpErr& e){
+                res.initErrRes(e.http_err_code, e.what());
+            } catch(const std::runtime_error& e){
+                res.initErrRes(500, e.what());
+            }
             cs.sendToClient(res.construct());
         }
 
