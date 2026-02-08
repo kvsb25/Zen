@@ -4,6 +4,7 @@ namespace middleware
 {
     PathMiddleware::PathMiddleware(std::string m, std::string p, Handler callback) : Middleware(Type::PATH), handler(callback), method(m) {
         // extract path segments with delim as '/'
+        try{
         std::stringstream ss(p);
         std::string path_segment;
         std::vector<std::string> segments;
@@ -73,9 +74,13 @@ namespace middleware
 
         // initialize path: Route
         this->route.path_regex = r;
+        } catch(const std::runtime_error& e){
+            throw;
+        }
     }
 
     bool PathMiddleware::match(http::Request& req){
+        try{
         // return true if the request url and method matches the middleware attributes method and path:Route
         bool match = false;
         std::smatch m;
@@ -107,5 +112,8 @@ namespace middleware
         }
 
         return match;
+        } catch(std::runtime_error){
+            throw;
+        }
     }
 }
