@@ -10,6 +10,7 @@
 #include "../../../include/zen/tcp/clientSession.hpp"
 
 #include "utils.hpp"
+#include "err.hpp"
 
 class Zen{
 private:
