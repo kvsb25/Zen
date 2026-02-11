@@ -10,6 +10,7 @@ void Zen::handle(http::Request& req, http::Response& res, int index){
         try{
             auto* dmw = static_cast<middleware::DefaultMiddleware*>(mw);  // down cast
             dmw->handler(req, res);
+            // give flag -02 or -03 with gcc to leverage tail call optimization
             return handle(req, res, index+1);
         } catch (const std::runtime_error& err) {
             /*CHANGE ERROR HANDLING FOR ONION ARCH*/ throw AppErr(err.what());
