@@ -13,7 +13,7 @@ void Zen::handle(http::Request& req, http::Response& res, int index){
             // give flag -02 or -03 with gcc to leverage tail call optimization
             return handle(req, res, index+1);
         } catch (const std::runtime_error& err) {
-            /*CHANGE ERROR HANDLING FOR ONION ARCH*/ throw AppErr(err.what());
+            /*CHANGE ERROR HANDLING FOR ONION ARCH*/ throw HandlerErr(err.what());
         }
     } else if(mw->type == middleware::Type::PATH) {
         try{
@@ -23,7 +23,7 @@ void Zen::handle(http::Request& req, http::Response& res, int index){
                 return;
             }
         } catch (const std::runtime_error& err){
-            /*CHANGE ERROR HANDLING FOR ONION ARCH*/ throw AppErr(err.what());
+            /*CHANGE ERROR HANDLING FOR ONION ARCH*/ throw HandlerErr(err.what());
         }
     }
     // delete all pointers on error 
@@ -72,7 +72,7 @@ void Zen::listen(const u_short& port, std::function<void(void)> callback){
                 std::cerr << e.what() << std::endl;
                 res.initErrRes(e.http_err_code, e.what());
                 
-            } catch(const AppErr& e){
+            } catch(const HandlerErr& e){
                 std::cerr << e.stackTrace() << std::endl;
                 res.initErrRes(500, e.what());
             } catch(const std::runtime_error& e){

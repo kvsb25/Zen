@@ -1,11 +1,11 @@
 #include <stdexcept>
 #include <stacktrace>
 
-class AppErr : public std::runtime_error{
+class HandlerErr : public std::runtime_error{
 private:
     std::stacktrace trace;
 public:
-    AppErr(const std::string& msg):std::runtime_error("Handler Error: "+msg), trace(std::stacktrace::current()){};
+    HandlerErr(const std::string& msg):std::runtime_error("Handler Error: "+msg), trace(std::stacktrace::current()){};
 
     const std::stacktrace& getStackTrace() const noexcept{
         return trace;
