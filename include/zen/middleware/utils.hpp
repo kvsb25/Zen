@@ -1,5 +1,7 @@
 #pragma once
 
+#include <functional>
+#include "../http/http.hpp"
 #include <iostream>
 
 namespace middleware{
@@ -8,7 +10,8 @@ namespace middleware{
     
     enum class Type{
         DEFAULT,
-        PATH
+        PATH,
+        ERR
     };
 
     class Middleware {

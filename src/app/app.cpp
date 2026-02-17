@@ -1,30 +1,41 @@
 #include "../../include/zen/app/app.hpp"
 
-void Zen::handle(http::Request& req, http::Response& res, int index){
+void Zen::handle(http::Request& req, http::Response& res, int index, const ZenErr& err){
     
     if(index >= pipe.size()) return;
 
     middleware::Middleware* mw = pipe[index].get(); // create a borrowed raw pointer of the unique_ptr at 'index' in pipe // DON'T DELETE mw MANUALLY
 
-    if(mw->type == middleware::Type::DEFAULT){
+    if(!err.isRelevant() && mw->type == middleware::Type::DEFAULT){
         try{
             auto* dmw = static_cast<middleware::DefaultMiddleware*>(mw);  // down cast
             dmw->handler(req, res);
             // give flag -02 or -03 with gcc to leverage tail call optimization
-            return handle(req, res, index+1);
+            return handle(req, res, index+1, err);
+
+        } catch (const ZenErr& e){
+            return handle(req, res, index+1, e);
+
         } catch (const std::runtime_error& err) {
             /*CHANGE ERROR HANDLING FOR ONION ARCH*/ throw HandlerErr(err.what());
         }
-    } else if(mw->type == middleware::Type::PATH) {
+    } else if(!err.isRelevant() && mw->type == middleware::Type::PATH) {
         try{
             auto* pmw = static_cast<middleware::PathMiddleware*>(mw);    // down cast
             if(pmw->match(req)){
                 pmw->handler(req, res);
                 return;
             }
+        } catch (const ZenErr& e){
+            return handle(req, res, index+1, e);
         } catch (const std::runtime_error& err){
             /*CHANGE ERROR HANDLING FOR ONION ARCH*/ throw HandlerErr(err.what());
         }
+    } else if(err.isRelevant() && mw->type == middleware::Type::ERR){
+        try{
+            auto* emw = static_cast<middleware::ErrorMiddleware*>(mw);
+            emw->handler(err, req, res);
+        } catch (...) {}
     }
     // delete all pointers on error 
 
