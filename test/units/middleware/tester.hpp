@@ -14,4 +14,5 @@ T3. Construct default middleware and test it against a valid request
 
 #include "../../../include/zen/middleware/defaultMiddleware.hpp"
 #include "../../../include/zen/middleware/pathMiddleware.hpp"
+#include "../../../include/zen/middleware/errorMiddleware.hpp"
 

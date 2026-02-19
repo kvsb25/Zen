@@ -17,11 +17,20 @@ int main(){
     // http::Response* res = new http::Response();
     http::Response res;
 
+    middleware::Middleware* emw = new middleware::ErrorMiddleware([](const ZenErr& e, http::Request& req, http::Response& res){
+        std::cout << e.what() << std::endl;
+        std::cout << e.getTrace() << std::endl;
+        return;
+    });
+
     // make sure the request and response objects sent to the handler are references
     middleware::Middleware* pm = new middleware::PathMiddleware("GET", "/", [](http::Request& req, http::Response& res){
         std::cout<< "req.method: " << req.method << std::endl 
             << "req.path: " << req.path << std::endl
             << "req.body: " << req.body << std::endl;
+        
+        if(true) throw ZenErr("Test error");
+        
         res.json("{\"message\": \"hello\"}");
         return;
     });

@@ -1,2 +1,2 @@
-g++ "../../../src/middleware/defaultMiddleware.cpp" "../../../src/middleware/pathMiddleware.cpp" "../../../src/http/request.cpp" "../../../src/http/response.cpp" "./test.cpp" "./tester.cpp" -o test;
+g++ -std=c++23 "../../../src/middleware/errorMiddleware.cpp" "../../../src/middleware/defaultMiddleware.cpp" "../../../src/middleware/pathMiddleware.cpp" "../../../src/http/request.cpp" "../../../src/http/response.cpp" "./test.cpp" "./tester.cpp" -o test -lstdc++_libbacktrace;
 if($?){.\test.exe};

@@ -6,36 +6,76 @@ void Zen::handle(http::Request& req, http::Response& res, int index, const ZenEr
 
     middleware::Middleware* mw = pipe[index].get(); // create a borrowed raw pointer of the unique_ptr at 'index' in pipe // DON'T DELETE mw MANUALLY
 
-    if(!err.isRelevant() && mw->type == middleware::Type::DEFAULT){
-        try{
-            auto* dmw = static_cast<middleware::DefaultMiddleware*>(mw);  // down cast
-            dmw->handler(req, res);
-            // give flag -02 or -03 with gcc to leverage tail call optimization
-            return handle(req, res, index+1, err);
+    // if(!err.isRelevant() && mw->type == middleware::Type::DEFAULT){
+    //     try{
+    //         auto* dmw = static_cast<middleware::DefaultMiddleware*>(mw);  // down cast
+    //         dmw->handler(req, res);
+    //         // give flag -02 or -03 with gcc to leverage tail call optimization
+    //         return handle(req, res, index+1, err);
 
-        } catch (const ZenErr& e){
-            return handle(req, res, index+1, e);
+    //     } catch (const ZenErr& e){
+    //         return handle(req, res, index+1, e);
 
-        } catch (const std::runtime_error& err) {
-            /*CHANGE ERROR HANDLING FOR ONION ARCH*/ throw HandlerErr(err.what());
-        }
-    } else if(!err.isRelevant() && mw->type == middleware::Type::PATH) {
-        try{
-            auto* pmw = static_cast<middleware::PathMiddleware*>(mw);    // down cast
-            if(pmw->match(req)){
-                pmw->handler(req, res);
-                return;
+    //     } catch (const std::runtime_error& err) {
+    //         /*CHANGE ERROR HANDLING FOR ONION ARCH*/ throw HandlerErr(err.what());
+    //     }
+    // } else if(!err.isRelevant() && mw->type == middleware::Type::PATH) {
+    //     try{
+    //         auto* pmw = static_cast<middleware::PathMiddleware*>(mw);    // down cast
+    //         if(pmw->match(req)){
+    //             pmw->handler(req, res);
+    //             return;
+    //         }
+    //     } catch (const ZenErr& e){
+    //         return handle(req, res, index+1, e);
+    //     } catch (const std::runtime_error& err){
+    //         /*CHANGE ERROR HANDLING FOR ONION ARCH*/ throw HandlerErr(err.what());
+    //     }
+    // } else if(err.isRelevant() && mw->type == middleware::Type::ERR){
+    //     try{
+    //         auto* emw = static_cast<middleware::ErrorMiddleware*>(mw);
+    //         emw->handler(err, req, res);
+    //     } catch (...) {
+    //         throw HandlerErr(err.what());
+    //     }
+    // }
+    try
+    {
+        if (!err.isRelevant())
+        {
+            if (mw->type == middleware::Type::DEFAULT)
+            {
+                auto *dmw = static_cast<middleware::DefaultMiddleware *>(mw); // down cast
+                dmw->handler(req, res);
+                // give flag -02 or -03 with gcc to leverage tail call optimization
             }
-        } catch (const ZenErr& e){
-            return handle(req, res, index+1, e);
-        } catch (const std::runtime_error& err){
-            /*CHANGE ERROR HANDLING FOR ONION ARCH*/ throw HandlerErr(err.what());
+            else if (mw->type == middleware::Type::PATH)
+            {
+                auto *pmw = static_cast<middleware::PathMiddleware *>(mw); // down cast
+                if (pmw->match(req))
+                {
+                    pmw->handler(req, res);
+                    return;
+                }
+            }
         }
-    } else if(err.isRelevant() && mw->type == middleware::Type::ERR){
-        try{
-            auto* emw = static_cast<middleware::ErrorMiddleware*>(mw);
-            emw->handler(err, req, res);
-        } catch (...) {}
+        else
+        {
+            if (mw->type == middleware::Type::ERR)
+            {
+                auto *emw = static_cast<middleware::ErrorMiddleware *>(mw);
+                emw->handler(err, req, res);
+            }
+        }
+        return handle(req, res, index + 1, err);
+    }
+    catch (const ZenErr &e)
+    {
+        if(e.isRelevant())
+            return handle(req, res, index + 1, e);
+    }
+    catch (const std::runtime_error& e){
+        throw HandlerErr(e.what());
     }
     // delete all pointers on error 
 
