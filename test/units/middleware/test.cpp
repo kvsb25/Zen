@@ -19,7 +19,7 @@ int main(){
 
     middleware::Middleware* emw = new middleware::ErrorMiddleware([](const ZenErr& e, http::Request& req, http::Response& res){
         std::cout << e.what() << std::endl;
-        std::cout << e.getTrace() << std::endl;
+        // std::cout << e.getTrace() << std::endl;
         return;
     });
 
