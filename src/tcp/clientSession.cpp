@@ -2,6 +2,11 @@
 
 ClientSession::ClientSession(SOCKET& s) : socket(s), buff(DEFAULT_BUFLEN){}
 
+// move semantics
+ClientSession::ClientSession(ClientSession&& other) noexcept : socket(other.socket) {
+    other.socket = INVALID_SOCKET;
+}
+
 ClientSession::~ClientSession(){
     if(closesocket(socket) == SOCKET_ERROR) {
         std::cout << "Client Socket close failed with error: "
