@@ -17,3 +17,6 @@ public:
     //     return ss.str();
     // }
 };
+
+// HandlerErr is for runtime Errors (excluding logical errors) while executing the underlying middlerware handler
+// HandlerErr are not handled by Error handling middleware

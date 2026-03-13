@@ -21,3 +21,6 @@ public:
     //     return ss.str();
     // }
 };
+
+// ZenErr is for throwing logic errors in middleware handlers on server application layer
+// Error handling Middleware catches only ZenErr 

@@ -1,6 +1,7 @@
 #include<iostream>
 #include<stdexcept>
 
+// For error related to HTTP parsing
 class HttpErr: public std::runtime_error{
 public:
     int http_err_code;
