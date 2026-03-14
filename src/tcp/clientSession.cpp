@@ -1,10 +1,22 @@
 #include "../../include/zen/tcp/clientSession.hpp"
 
-ClientSession::ClientSession(SOCKET& s) : socket(s), buff(DEFAULT_BUFLEN){}
+ClientSession::ClientSession(){};
+
+ClientSession::ClientSession(SOCKET& s) : socket(s){}
 
 // move semantics
 ClientSession::ClientSession(ClientSession&& other) noexcept : socket(other.socket) {
     other.socket = INVALID_SOCKET;
+}
+
+ClientSession& ClientSession::operator=(ClientSession&& other) noexcept{
+    if(this != &other){
+        if(socket != INVALID_SOCKET){
+            socket = other.socket;
+            other.socket = INVALID_SOCKET;
+        }
+    }
+    return *this;
 }
 
 ClientSession::~ClientSession(){
@@ -47,7 +59,7 @@ std::string ClientSession::recvFromClient(){
             // call recv(for client's socket, buff starting mem addr, available space that can be filled, remote entity closes the connection)
             bytesRecv = recv( // recv from winsock
                 this->socket, 
-                buff.data() + totalBytesRecv, // pointer to buffer to receive incoming data
+                buff.data() + totalBytesRecv, // pointer to buffer to receive incoming data. pointer to start of the buffer (i.e. buff[0])
                 buff.size() - totalBytesRecv, // space left on buffer
                 0
             );

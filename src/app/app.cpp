@@ -75,7 +75,9 @@ void Zen::listen(const u_short& port, std::function<void(void)> callback){
             SOCKET client_socket = INVALID_SOCKET;
             client_socket = accept(server.getMainSocket(), NULL, NULL);
             
-            ClientSession cs(client_socket);    
+            ClientSession cs(client_socket);
+
+            //
             std::string data = cs.recvFromClient();
 
             http::Response res;
@@ -101,6 +103,7 @@ void Zen::listen(const u_short& port, std::function<void(void)> callback){
 
             }
             cs.sendToClient(res.construct());
+            //
         }
 
 
