@@ -2,6 +2,7 @@
 
 TcpServer::TcpServer(u_short port)
 {
+// server is in blocking mode so that whenever INVALID_SOCKET arrives the main_thread sleeps until a valid socket arrives 
     try{
         if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
         {

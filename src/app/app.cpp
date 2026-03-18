@@ -77,6 +77,19 @@ void Zen::listen(const u_short& port, std::function<void(void)> callback){
         while(true){
             SOCKET client_socket = INVALID_SOCKET;
             client_socket = accept(server.getMainSocket(), NULL, NULL);
+            if(client_socket == INVALID_SOCKET){
+                int err = WSAGetLastError();
+                switch (err){
+                    case WSAEMFILE:
+                        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+                    case WSAENOTSOCK:
+                    case WSAEINVAL:
+                        throw CriticalErr("main_socket is no longer a valid socket");
+                    default:
+                        std::cerr << "Unexpected accept error: " << err << std::endl;
+                        continue;
+                }
+            }
             
             ClientSession cs(client_socket);
 
