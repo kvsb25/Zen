@@ -4,10 +4,11 @@
 #include <vector>
 #include <memory>
 #include <functional>
-#include "../../../include/zen/http/http.hpp"
-#include "../../../include/zen/middleware/middleware.hpp"
-#include "../../../include/zen/tcp/tcpServer.hpp"
-#include "../../../include/zen/tcp/clientSession.hpp"
+#include "../http/http.hpp"
+#include "../middleware/middleware.hpp"
+#include "../tcp/tcpServer.hpp"
+#include "../tcp/clientSession.hpp"
+#include "../thread-pool/thread-pool.hpp"
 
 #include "utils.hpp"
 #include "err.hpp"

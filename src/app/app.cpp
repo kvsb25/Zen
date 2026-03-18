@@ -64,11 +64,14 @@ Zen& Zen::use(std::string method, std::string path, std::function<void(http::Req
     return *this;
 }
 
+// make the listen function return int to handle process exit for critical errors
 void Zen::listen(const u_short& port, std::function<void(void)> callback){
-    TcpServer server(port);
-    callback();
-
+    
     try{
+        TcpServer server(port);
+        unsigned int cores = std::thread::hardware_concurrency();
+        ThreadPool pool(cores);
+        callback();
 
 
         while(true){
@@ -107,6 +110,8 @@ void Zen::listen(const u_short& port, std::function<void(void)> callback){
         }
 
 
+    } catch(const CriticalErr& e){
+        // return 1;
     } catch (const WinsockErr& e){
         std::cerr<<e.what()<<std::endl;
         if(!e.cleaned){

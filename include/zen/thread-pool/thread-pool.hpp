@@ -8,6 +8,7 @@
 #include <functional>
 #include <winsock2.h>
 #include "../tcp/clientSession.hpp"
+#include "../tcp/utils.hpp"
 #include "../app/app.hpp"
 
 // create a generic task/function pool, don't tie to HTTP

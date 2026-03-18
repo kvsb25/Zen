@@ -31,10 +31,11 @@ TcpServer::TcpServer(u_short port)
         if(!e.cleaned){
             WSACleanup();   
         }
-        throw;
+        throw CriticalErr(e.what());
     } catch (const std::runtime_error& e){
-        throw;
+        throw CriticalErr(e.what());
     }
+    // the catch block checks error from derived to base. First it will check if the thrown error matches exactly(with the catch definition), if not then it will check if the definition it has is a direct parent of the thrown error. This is the reason we have mentione WinsockErr first so it gets identified first and the order of catch satetements is in Derived to base
 }
 
 TcpServer::~TcpServer(){
