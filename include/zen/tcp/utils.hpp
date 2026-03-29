@@ -17,6 +17,14 @@ public:
     }
 };
 
+class ClientSockErr: public std::runtime_error{
+public:
+    bool cleaned;
+    ClientSockErr(int msg):std::runtime_error("Client Socket Error: " + std::to_string(msg)), cleaned(false){
+        // do client socket cleaning
+    }
+};
+
 class CriticalErr: public std::runtime_error{
 public:
     CriticalErr(const char* msg = "") : std::runtime_error(std::string(msg) + "CRITICAL ERROR, exiting..."){}

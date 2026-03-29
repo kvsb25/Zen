@@ -111,17 +111,18 @@ std::string ClientSession::recvFromClient(){
                     break;
                     throw std::runtime_error("Request Timeout");
                 } else {
-                    throw WinsockErr();
+                    throw ClientSockErr(err);
                 }
             }
         }
 
 
 
-    } catch(const WinsockErr& e){
-        if(!e.cleaned){
-            WSACleanup();
-        }
+    } catch(const ClientSockErr& e){
+        // if(!e.cleaned){
+        //     WSACleanup();
+        // }
+        throw;
     } catch (const std::runtime_error& e){
         if(e.what() == "Request Timeout"){
             sendToClient("Request Timeout");
@@ -162,16 +163,17 @@ void ClientSession::sendToClient(const std::string& res){
                     if(retry-- > 0) continue;
                     throw std::runtime_error("Retry fail");
                 } else {
-                    throw WinsockErr();
+                    throw ClientSockErr(err);
                 }
             }
         }
 
 
-    } catch(const WinsockErr& e){
-        if(!e.cleaned){
-            WSACleanup();
-        }
+    } catch(const ClientSockErr& e){
+        // if(!e.cleaned){
+        //     // WSACleanup();
+        // }
+        throw;
     } catch (const std::runtime_error& e){
         std::cerr << e.what() << std::endl;
     }
