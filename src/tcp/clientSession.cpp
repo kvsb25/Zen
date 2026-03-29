@@ -47,7 +47,7 @@ std::string ClientSession::recvFromClient(){
         // loop to continuously receive data from socket kernel buffer to app session buffer
         while(true){
             if( buff.size() == totalBytesRecv){
-                buff.resize(buff.size()*2);
+                buff.resize(buff.size()*2); // double the capacity not the size
             }
 
             // hard limit protection
@@ -104,11 +104,16 @@ std::string ClientSession::recvFromClient(){
                 retry = 5;
             } else if(bytesRecv == 0) {
                 break;
+            // if bytesRecv < 0, then handle error
             } else {
                 int err = WSAGetLastError();
                 if(err == WSAEWOULDBLOCK){
-                    if(retry-- > 0) continue;
-                    break;
+                    if(retry-- > 0){
+                        // retry after 5 seconds
+                        std::this_thread::sleep_for(std::chrono::milliseconds(5000));
+                        continue;
+                    };
+                    // break;
                     throw std::runtime_error("Request Timeout");
                 } else {
                     throw ClientSockErr(err);
@@ -160,7 +165,11 @@ void ClientSession::sendToClient(const std::string& res){
 
                 // retry sending
                 if(err == WSAEWOULDBLOCK || err == WSAEINTR || err == WSAEINVAL){
-                    if(retry-- > 0) continue;
+                    if(retry-- > 0){
+                        // retry after 5 seconds
+                        std::this_thread::sleep_for(std::chrono::milliseconds(5000));
+                        continue;
+                    }
                     throw std::runtime_error("Retry fail");
                 } else {
                     throw ClientSockErr(err);

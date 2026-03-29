@@ -3,6 +3,7 @@
 #include<iostream>
 #include<vector>
 #include "utils.hpp"
+#include "../thread-pool/thread-pool.hpp"
 
 #define DEFAULT_BUFLEN 8192
 #define MAX_REQUEST_SIZE 5242880 // 5MB
