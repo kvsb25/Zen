@@ -77,6 +77,8 @@ void Zen::listen(const u_short& port, std::function<void(void)> callback){
         while(true){
             SOCKET client_socket = INVALID_SOCKET;
             client_socket = accept(server.getMainSocket(), NULL, NULL);
+
+            // error handling if open socket limit reached or if the main listening socket gets invalid 
             if(client_socket == INVALID_SOCKET){
                 int err = WSAGetLastError();
                 switch (err){
@@ -86,40 +88,46 @@ void Zen::listen(const u_short& port, std::function<void(void)> callback){
                     case WSAEINVAL:
                         throw CriticalErr("main_socket is no longer a valid socket");
                     default:
+                        // if any other error, don't process for INVALID_SOCKET client socket
                         std::cerr << "Unexpected accept error: " << err << std::endl;
                         continue;
                 }
             }
             
             ClientSession cs(client_socket);
+            pool.enqueue([cs = std::move(cs), this]() mutable{
+                try{
+                    std::string data = cs.recvFromClient();
+                    http::Response res;
+                    try{
+        
+                    http::Request req(data);
+        
+                    this->handle(req, res);
+        
+                    } catch(const HttpErr& e){
+        
+                        std::cerr << e.what() << std::endl;
+                        res.initErrRes(e.http_err_code, e.what());
+                        
+                    } catch(const HandlerErr& e){
+                        // std::cerr << e.stackTrace() << std::endl;
+                        std::cerr << e.what() << std::endl;
+                        res.initErrRes(500, e.what());
+                    } catch(const std::runtime_error& e){
+        
+                        std::cerr << e.what() << std::endl;
+                        res.initErrRes(500, e.what());
+        
+                    }
 
-            //
-            std::string data = cs.recvFromClient();
-
-            http::Response res;
-            try{
-
-            http::Request req(data);
-
-            this->handle(req, res);
-
-            } catch(const HttpErr& e){
-
-                std::cerr << e.what() << std::endl;
-                res.initErrRes(e.http_err_code, e.what());
-                
-            } catch(const HandlerErr& e){
-                // std::cerr << e.stackTrace() << std::endl;
-                std::cerr << e.what() << std::endl;
-                res.initErrRes(500, e.what());
-            } catch(const std::runtime_error& e){
-
-                std::cerr << e.what() << std::endl;
-                res.initErrRes(500, e.what());
-
-            }
-            cs.sendToClient(res.construct());
-            //
+                    cs.sendToClient(res.construct());
+                } catch (ClientSockErr& e){
+                    // std::cout<<"fucked"<<std::endl;
+                    std::cerr << e.what() << std::endl;
+                    cs.~ClientSession();
+                }
+            });
         }
 
 
