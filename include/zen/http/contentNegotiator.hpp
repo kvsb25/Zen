@@ -4,7 +4,7 @@
 namespace http{
     class ContentNegotiator{
     public:
-        static FormatPriority parser(std::string header_val);
-        static std::string match(FormatHandlerMap handler_map, FormatPriority accepted_val);
+        static FormatPriority parse(const std::string& header_val);
+        static std::string match(const FormatHandlerMap& handler_map, const FormatPriority& accepted_val);
     };
 }

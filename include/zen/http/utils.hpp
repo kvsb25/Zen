@@ -13,7 +13,7 @@
 namespace http
 {   
     // content negotiator
-    using FormatPriority = std::priority_queue<std::pair<int, std::string>>;
+    using FormatPriority = std::priority_queue<std::pair<float, std::string>>;
     using FormatHandlerMap = std::unordered_map<std::string, std::function<void()>>;
 
     // message status and codes
