@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include <unordered_map>
+#include <queue>
 #include <unordered_set>
 #include <vector>
 #include <sstream>
@@ -10,8 +11,12 @@
 #include "err.hpp"
 
 namespace http
-{
+{   
+    // content negotiator
+    using FormatPriority = std::priority_queue<std::pair<int, std::string>>;
+    using FormatHandlerMap = std::unordered_map<std::string, std::function<void()>>;
 
+    // message status and codes
     const std::unordered_map<int, std::string> message_for_status = {
         // --- 1xx Informational ---
         {100, "Continue"},
