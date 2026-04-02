@@ -64,6 +64,12 @@ Zen& Zen::use(std::string method, std::string path, std::function<void(http::Req
     return *this;
 }
 
+Zen& Zen::use(std::function<void(const ZenErr& e, http::Request& req, http::Response& res)> callback){
+    auto mw = std::make_unique<middleware::ErrorMiddleware>(std::move(callback));
+    pipe.push_back(std::move(mw));
+    return *this;
+}
+
 // make the listen function return int to handle process exit for critical errors
 void Zen::listen(const u_short& port, std::function<void(void)> callback){
     

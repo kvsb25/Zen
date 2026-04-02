@@ -26,5 +26,6 @@ public:
     Zen();
     Zen& use(std::function<void(http::Request&, http::Response&)> callback);
     Zen& use(std::string method, std::string path, std::function<void(http::Request&, http::Response&)> callback);
+    Zen& use(std::function<void(const ZenErr& e, http::Request& req, http::Response& res)> callback);
     void listen(const u_short& port, std::function<void(void)> callback = [](){});
 };
