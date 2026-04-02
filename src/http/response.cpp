@@ -14,6 +14,19 @@ namespace http
         headers["Content-Length"] = "0";
         headers["Content-Type"] = "text/html; charset=UTF-8";
     }
+
+    Response::Response(const Request& req)
+    {
+        this->req = &req;
+        status_code = 200;
+        status_message = message_for_status.at(200);
+        
+        auto iso = []{ auto t=time(nullptr); char b[32]; strftime(b,32,"%Y-%m-%dT%H:%M:%SZ", gmtime(&t)); return std::string(b); }();
+        headers["Date"] = iso;
+        headers["Connection"] = "close";
+        headers["Content-Length"] = "0";
+        headers["Content-Type"] = "text/html; charset=UTF-8";
+    }
     
     void Response::initErrRes(int code, const std::string& msg){
         status_code = code;
@@ -91,6 +104,10 @@ namespace http
             this->headers.insert(header);
         }
         return *this;
+    }
+
+    Response& Response::format(const FormatHandlerMap& mp){
+        // FormatPriority fpq = ContentNegotiator::parse("head");
     }
 
     void Response::redirect(const std::string& url){

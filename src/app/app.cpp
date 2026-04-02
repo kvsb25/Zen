@@ -102,6 +102,7 @@ void Zen::listen(const u_short& port, std::function<void(void)> callback){
                     try{
         
                     http::Request req(data);
+                    res = http::Response(req);
         
                     this->handle(req, res);
         
@@ -122,7 +123,7 @@ void Zen::listen(const u_short& port, std::function<void(void)> callback){
                     }
 
                     cs.sendToClient(res.construct());
-                } catch (ClientSockErr& e){
+                } catch (ClientSockErr& e){ 
                     // std::cout<<"fucked"<<std::endl;
                     std::cerr << e.what() << std::endl;
                     cs.~ClientSession();
