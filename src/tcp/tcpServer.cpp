@@ -42,7 +42,7 @@ TcpServer::TcpServer(u_short port)
 TcpServer::~TcpServer(){
     closesocket(main_socket);
     WSACleanup();
-    exit(0);
+    // exit(0);
 }
 
 SOCKET& TcpServer::getMainSocket(){

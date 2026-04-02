@@ -132,7 +132,8 @@ void Zen::listen(const u_short& port, std::function<void(void)> callback){
                 } catch (ClientSockErr& e){ 
                     // std::cout<<"fucked"<<std::endl;
                     std::cerr << e.what() << std::endl;
-                    cs.~ClientSession();
+                    cs.closeSession();
+                    return;
                 }
             });
         }
@@ -140,6 +141,7 @@ void Zen::listen(const u_short& port, std::function<void(void)> callback){
 
     } catch(const CriticalErr& e){
         // return 1;
+        throw;
     } catch (const WinsockErr& e){
         std::cerr<<e.what()<<std::endl;
         if(!e.cleaned){
