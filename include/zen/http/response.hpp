@@ -8,7 +8,7 @@ namespace http{
     
     struct Response{
     private:
-        const Request* req;
+        const Request* req_ptr = nullptr;
     public: // public only for test purposes
         int status_code;
         std::string status_message;
@@ -25,7 +25,7 @@ namespace http{
         Response& header(std::pair<std::string, std::string>& key_value_pair);
         // Response& setHeader(std::string key, std::string value);
         Response& header(std::vector<std::pair<std::string, std::string>>& headers);
-        Response& format(const FormatHandlerMap& handler_map);
+        void format(const std::string& header_to_look_for, const FormatHandlerMap& handler_map);
         void redirect(const std::string& absolute_url);
         std::string construct() const;
     };

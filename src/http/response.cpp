@@ -1,10 +1,13 @@
 #include "../../include/zen/http/response.hpp"
+#include "../../include/zen/http/contentNegotiator.hpp"
+#include "../../include/zen/http/request.hpp"
 
 namespace http
 {
 
     Response::Response()
     {
+        // req_ptr = nullptr;
         status_code = 200;
         status_message = message_for_status.at(200);
         
@@ -17,7 +20,7 @@ namespace http
 
     Response::Response(const Request& req)
     {
-        this->req = &req;
+        this->req_ptr = &req;
         status_code = 200;
         status_message = message_for_status.at(200);
         
@@ -106,8 +109,26 @@ namespace http
         return *this;
     }
 
-    Response& Response::format(const FormatHandlerMap& mp){
-        // FormatPriority fpq = ContentNegotiator::parse("head");
+    void Response::format(const std::string& header, const FormatHandlerMap& mp){
+
+        auto it = req_ptr->headers.find(header);
+        if(it != req_ptr->headers.end()){
+            const std::string& header_val = (*it).second;
+            FormatPriority fpq = ContentNegotiator::parse(header_val); // format priority queue
+            
+            std::string match_result = ContentNegotiator::match(mp, fpq);
+            if(match_result == "DEFAULT"){
+                // send status code 406 and message
+                this->status(406);
+            } else {
+                this->headers["Content-Type"] = match_result;
+                this->headers["Vary"] = header;
+                std::function<void()> func = mp.at(match_result);
+                func();
+            }
+        } // ignore if the header in parameter is not in the request headers
+
+        return;
     }
 
     void Response::redirect(const std::string& url){
@@ -129,6 +150,8 @@ namespace http
 
         res_ss << "HTTP/1.1 " << status_code << " " << status_message << " " << delim;
         
+        // form Content-Type, Content-Length (and few more necessary headers) here if they are not already set.
+
         for(const auto& header : this->headers){
             res_ss << header.first << ": " << header.second << delim;
         }
