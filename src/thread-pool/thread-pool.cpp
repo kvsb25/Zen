@@ -2,7 +2,7 @@
 
 ThreadPool::ThreadPool(size_t threads){
     try{
-        if(threads <= 0) throw std::runtime_error("Could determine the number of cores, or not supported");
+        if(threads <= 0) throw std::runtime_error("Could not determine the number of cores, or not supported");
         for(size_t i = 0; i<threads; ++i){
             workers.emplace_back([this]{
                 while(true){
