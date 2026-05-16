@@ -4,14 +4,14 @@
 
 ## IMPLEMENTED FEATURES (Core Strengths)
 
-### 1) **L4 Transport Layer Load Balancing + Multi-Threading**
+### 1) **Concurrent Request Handling via ThreadPool**
 
-At the **Layer 4 (TCP)** boundary, `Zen::listen(...)` continuously accepts incoming client sockets and dispatches each accepted connection to a worker task in a **`ThreadPool`**.
+At the **Layer 4 (TCP)** boundary, the main server loop in `Zen::listen(...)` continuously accepts incoming client sockets and immediately offloads them to a worker task within a robust **`ThreadPool`**.
 
 - Uses **`std::thread::hardware_concurrency()`** to size the worker pool according to available cores.
 - Decouples accept-loop socket acquisition from request handling execution.
-- Enables practical **concurrent request servicing** across many client connections.
-- Delivers a clean **transport-level load distribution** pattern for the framework runtime.
+- Enables the micro-framework to reliably service many independent client connections in parallel without bottlenecking.
+- Achieves an efficient workload distribution across system resources, avoiding the heavy overhead of spawning a new thread per request.
 
 ### 2) **Asynchronous Per-Client Handling via Move-Only `ClientSession`**
 
