@@ -15,9 +15,10 @@ TcpServer::TcpServer(u_short port)
             throw WinsockErr("main_socket init failed");
         }
 
-        server_addr.sin_family = AF_INET;
-        server_addr.sin_port = htons(port);
-        server_addr.sin_addr.s_addr = INADDR_ANY;
+        server_addr.sin_family = AF_INET; // supports IPv4 -- must match the socket domain
+        server_addr.sin_port = htons(port); // port at which the socket will exist
+        // using htons to convert host byte order to network byte order
+        server_addr.sin_addr.s_addr = INADDR_ANY; // it is the IP of the network over which the socket must be active to receive and send data packets. INADDR_ANY represents all network interfaces including local host network
 
         int bindStatus = bind(main_socket, (SOCKADDR *)&server_addr, sizeof(server_addr));
         if(bindStatus == SOCKET_ERROR){
